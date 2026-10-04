@@ -1,6 +1,7 @@
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+markers = ["live: hits Yahoo Finance and Google News (needs BMM_LIVE=1)"]
 
 [tool.ruff]
 line-length = 100

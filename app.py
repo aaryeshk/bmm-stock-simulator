@@ -3,8 +3,18 @@ from __future__ import annotations
 
 import streamlit as st
 
+from bmm.data import (
+    UPLOAD_HELP,
+    DataUnavailable,
+    PriceHistory,
+    UploadError,
+    get_index_prices,
+    get_prices,
+)
+from bmm.market import is_stale, market_status
+from bmm.news import get_headlines
 from bmm.search import Status, resolve
-from bmm.universe import as_of, stocks
+from bmm.universe import Stock, as_of, stocks
 
 DISCLAIMER = (
     "Educational model of stock price movement only. Not investment advice or a forecast. "
@@ -31,6 +41,56 @@ def on_search() -> None:
 def on_choose(key: str) -> None:
     if st.session_state[key]:
         pick(st.session_state[key])
+
+
+def uploaded(key: str) -> bytes | None:
+    file = st.session_state.get(key)
+    return file.getvalue() if file is not None else None
+
+
+def load(symbol: str, loader) -> tuple[PriceHistory | None, str | None]:
+    try:
+        return loader(), None
+    except (DataUnavailable, UploadError) as exc:
+        return None, str(exc)
+
+
+def describe(h: PriceHistory) -> str:
+    return (f"{h.source_label} · {len(h)} trading days, {h.start:%d-%b-%Y} to {h.end:%d-%b-%Y}"
+            f" · last adjusted close {h.adj_close.iloc[-1]:,.2f}")
+
+
+def show_data(stock: Stock) -> PriceHistory | None:
+    """Status line, price and index sources, and the CSV upload. Returns the stock's prices."""
+    status = market_status()
+    icon = {"open": "🟢", "closed": "🔴", "unknown": "⚪"}[status.state]
+    st.caption(f"{icon} NSE: {status.label}. {status.detail}")
+
+    stock_key, index_key = f"upload::{stock.symbol}", "upload::^NSEI"
+    prices, error = load(stock.symbol, lambda: get_prices(
+        stock.symbol, stock.yahoo_symbol, uploaded(stock_key)))
+    index, index_error = load("^NSEI", lambda: get_index_prices(uploaded(index_key)))
+
+    with st.expander("Use your own CSV", expanded=prices is None):
+        st.caption(UPLOAD_HELP)
+        st.file_uploader(f"{stock.symbol} daily prices", type="csv", key=stock_key)
+        st.file_uploader("Nifty 50 daily prices (optional, used for beta)", type="csv",
+                         key=index_key)
+
+    if prices is None:
+        st.error(error)
+        return None
+    st.caption(f"**Prices:** {describe(prices)}")
+    for note in prices.notes:
+        st.info(note)
+    if prices.source != "upload" and is_stale(prices.end.date(), status):
+        st.warning(f"Prices end on {prices.end:%d-%b-%Y}, before the last NSE close "
+                   f"({status.last_close:%d-%b-%Y}).")
+    if index is not None:
+        st.caption(f"**Nifty 50:** {describe(index)}")
+    else:
+        st.warning(f"Nifty 50 data unavailable, so beta will fall back to 1.0. {index_error}")
+    return prices
 
 
 st.title("BMM Stock Simulator")
@@ -71,10 +131,21 @@ else:
         details.insert(1, f"{stock.group} group")
     st.caption(" · ".join(details))
 
+    prices = show_data(stock)
+
     market, paths, third = st.tabs(["Market now", "BMM path trace", "Dashboard 3"])
     with market:
-        st.info("Price, day change, 52-week range, momentum, volatility regime, trend label and "
-                "headlines arrive in Phase 4.")
+        st.info("Day change, 52-week range, momentum, volatility regime and the trend label "
+                "arrive in Phase 4.")
+        if prices is not None:
+            st.line_chart(prices.adj_close, height=260, y_label="Adjusted close")
+        news = get_headlines(stock.yahoo_symbol, stock.name)
+        st.markdown(f"**Recent headlines** ({len(news.headlines)})")
+        for h in news.headlines:
+            st.markdown(f"- [{h.title}]({h.url}) · {h.publisher} · "
+                        f"{h.published.tz_convert('Asia/Kolkata'):%d %b, %H:%M} IST")
+        for note in news.notes:
+            st.caption(note)
     with paths:
         st.info("1,000 simulated price paths (naive bootstrap vs scientific GBM), the 5–95% cone, "
                 "terminal distribution and backtest arrive in Phase 5.")

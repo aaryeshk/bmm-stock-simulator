@@ -96,7 +96,8 @@ def fetch_yahoo(yahoo_symbol: str, years: int = YEARS) -> pd.DataFrame:
         raw = yf.Ticker(yahoo_symbol).history(period=f"{years}y", interval="1d",
                                               auto_adjust=False, actions=False)
     except Exception as exc:  # yfinance raises many types: HTTP, rate limit, JSON, ...
-        raise DataUnavailable(f"Yahoo Finance error: {type(exc).__name__}: {exc}") from exc
+        # Keep the user-facing reason short; the full error is in the server log.
+        raise DataUnavailable(f"Yahoo Finance could not be reached: {type(exc).__name__}") from exc
     if raw is None or raw.empty:
         raise DataUnavailable("Yahoo Finance returned no data")
     raw = raw.rename(columns={"Open": "open", "High": "high", "Low": "low", "Close": "close",
@@ -142,7 +143,8 @@ def load_snapshot(symbol: str) -> PriceHistory:
 
 def write_snapshot(symbol: str, frame: pd.DataFrame, source: str = "Yahoo Finance") -> dict:
     SNAPSHOT_DIR.mkdir(parents=True, exist_ok=True)
-    frame.to_csv(snapshot_path(symbol), float_format="%.4f", date_format="%Y-%m-%d")
+    frame.to_csv(snapshot_path(symbol), float_format="%.4f", date_format="%Y-%m-%d",
+                 index_label="date")
     manifest = snapshot_manifest()
     manifest[symbol] = {"source": source, "fetched_at": pd.Timestamp.now(tz="UTC").isoformat(),
                         "start": str(frame.index[0].date()), "end": str(frame.index[-1].date()),

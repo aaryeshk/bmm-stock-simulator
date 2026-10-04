@@ -56,3 +56,23 @@ def test_browse_lists_all_100(app):
     assert "Mahindra & Mahindra Ltd (M&M) · Automobile and Auto Components" in browse.options
     browse.set_value("M&M").run()
     assert app.session_state["symbol"] == "M&M"
+
+
+def test_demo_stock_falls_back_to_the_bundled_snapshot(app):
+    search(app, "RELIANCE")  # tests run offline, so Yahoo is unavailable
+    assert any("bundled snapshot" in i.value for i in app.info)
+    assert any("Bundled snapshot" in c.value and "500 trading days" in c.value
+               for c in app.caption)
+    assert any(c.value.startswith("**Nifty 50:** Bundled snapshot") for c in app.caption)
+    assert not app.error
+
+
+def test_other_stocks_ask_for_an_upload_when_offline(app):
+    search(app, "INFY")
+    assert "Upload a CSV instead" in app.error[0].value
+    assert app.expander[0].label == "Use your own CSV"
+
+
+def test_market_status_is_shown(app):
+    search(app, "TCS")
+    assert any("NSE:" in c.value for c in app.caption)

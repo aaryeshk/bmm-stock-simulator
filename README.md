@@ -19,7 +19,7 @@ pytest -q
 | Phase | Deliverable | Status |
 |---|---|---|
 | 1 | Search + Nifty 100 universe | Done |
-| 2 | Data layer (Yahoo prices + headlines, cache, CSV fallback) | |
+| 2 | Data layer (Yahoo prices + headlines, cache, CSV fallback) | Done |
 | 3 | Trend engine (μ, σ) | |
 | 4 | Dashboard 1: Market now | |
 | 5 | Dashboard 2: BMM path trace | |
@@ -44,15 +44,42 @@ sector, business group, aliases, ISIN and the `as_of` date it was taken from NSE
 list and checks every Yahoo symbol weekly, opening an issue when something changes (NSE
 rebalances the index each March and September).
 
+## Data
+
+| Need | Source, in order | Notes |
+|---|---|---|
+| Daily prices (2 years) | Your CSV upload → Yahoo Finance → bundled snapshot | Adjusted close for all returns. Yahoo results cached 15 minutes; failures retried after 2 minutes |
+| Nifty 50 (for beta) | Your CSV upload → Yahoo `^NSEI` → bundled snapshot | If none is available, beta falls back to 1.0 |
+| Headlines (14 days) | Yahoo Finance + Google News RSS, merged and de-duplicated | Best effort: a failed source becomes a note, never an error |
+| Market status | NSE hours 09:15–15:30 IST, holidays from `exchange_calendars` (XBOM) | Shows "unknown" past the calendar's last date (currently 31-Dec-2026) |
+
+**Bundled snapshot.** Only Reliance and the Nifty 50 are bundled (`data/snapshots/`), to stay
+within Yahoo's terms for a public repo. The [Snapshot](.github/workflows/snapshot.yml) workflow
+refreshes them. Any other stock needs a live download or an upload.
+
+**CSV upload.** A `Date` column and an `Adj Close` column (`Close` is accepted, with a warning).
+Dates may be `YYYY-MM-DD` or day-first (`18/08/2026`, `18-Aug-2026`); thousands separators are
+fine. At least 60 trading days, ideally 2 years.
+
+**Tests.** `pytest` runs offline (`BMM_OFFLINE=1` is set automatically). The live path is tested
+by the [Live data](.github/workflows/live-data.yml) workflow (`BMM_LIVE=1 pytest tests/test_live.py`)
+on weekdays after the close and whenever the data code changes.
+
 ## Layout
 
 ```
 app.py                     Streamlit entry point
 bmm/universe.py            Loads the dated Nifty 100 snapshot
 bmm/search.py              Query resolver (ticker, alias, name, group, prefix, fuzzy, reject)
+bmm/data.py                Prices: Yahoo, snapshot fallback, CSV upload
+bmm/news.py                Headlines: Yahoo Finance + Google News
+bmm/market.py              NSE open/closed/holiday status in IST
+bmm/cache.py               15-minute TTL cache
 data/nifty100.csv          Universe snapshot
+data/snapshots/            Bundled demo prices (Reliance, Nifty 50)
 scripts/check_universe.py  Official-list and Yahoo check (run by CI)
+scripts/make_snapshot.py   Refreshes data/snapshots (run by CI)
 reference/                 Class workbook, verified sample export, Excel export spec
-tests/                     Resolver, universe and headless app tests
+tests/                     Unit, headless app and live-data tests
 docs/screenshots/          Headless screenshots of the app
 ```

@@ -1,0 +1,16 @@
+{
+  "RELIANCE": {
+    "source": "Yahoo Finance",
+    "fetched_at": "2026-10-04T07:52:17.781212+00:00",
+    "start": "2024-10-03",
+    "end": "2026-10-01",
+    "rows": 500
+  },
+  "^NSEI": {
+    "source": "Yahoo Finance",
+    "fetched_at": "2026-10-04T07:52:17.852119+00:00",
+    "start": "2024-10-03",
+    "end": "2026-10-01",
+    "rows": 495
+  }
+}

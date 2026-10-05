@@ -1,0 +1,33 @@
+name: Snapshot
+
+# Refreshes the bundled demo snapshot (data/snapshots: Reliance + Nifty 50) from Yahoo Finance
+# and commits it to the branch that triggered the run.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - scripts/make_snapshot.py
+      - .github/workflows/snapshot.yml
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python scripts/make_snapshot.py
+      - name: Commit snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/snapshots
+          if git diff --cached --quiet; then echo "Snapshot unchanged"; exit 0; fi
+          git commit -m "Refresh demo snapshot from Yahoo Finance"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

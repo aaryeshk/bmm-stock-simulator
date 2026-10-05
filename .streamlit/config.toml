@@ -1,0 +1,9 @@
+[browser]
+gatherUsageStats = false
+
+[client]
+toolbarMode = "viewer"   # hide the developer menu (Deploy, Rerun, Settings) from visitors
+
+[server]
+headless = true
+maxUploadSize = 20       # MB; price CSVs are tiny

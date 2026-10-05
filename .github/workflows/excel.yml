@@ -1,0 +1,28 @@
+name: Excel
+
+# Builds the Excel export, recalculates it in LibreOffice Calc and checks for zero formula
+# errors and a cell-for-cell match with the app and the verified class sample.
+on:
+  push:
+    paths:
+      - bmm/**
+      - tests/test_excel.py
+      - tests/fixtures/**
+      - requirements*.txt
+      - .github/workflows/excel.yml
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  excel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install LibreOffice Calc
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq libreoffice-calc-nogui
+      - run: pip install -r requirements-dev.txt
+      - run: pytest -v tests/test_excel.py

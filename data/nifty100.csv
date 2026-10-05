@@ -1,0 +1,101 @@
+symbol,yahoo_symbol,name,sector,group,aliases,isin,as_of
+ABB,ABB.NS,ABB India Ltd,Capital Goods,,,INE117A01022,2026-10-04
+ADANIENSOL,ADANIENSOL.NS,Adani Energy Solutions Ltd,Power,Adani,AESL|Adani Energy,INE931S01010,2026-10-04
+ADANIENT,ADANIENT.NS,Adani Enterprises Ltd,Metals & Mining,Adani,Adani Enterprises,INE423A01024,2026-10-04
+ADANIGREEN,ADANIGREEN.NS,Adani Green Energy Ltd,Power,Adani,AGEL|Adani Green,INE364U01010,2026-10-04
+ADANIPORTS,ADANIPORTS.NS,Adani Ports and Special Economic Zone Ltd,Services,Adani,APSEZ|Adani Ports,INE742F01042,2026-10-04
+ADANIPOWER,ADANIPOWER.NS,Adani Power Ltd,Power,Adani,Adani Power,INE814H01029,2026-10-04
+AMBUJACEM,AMBUJACEM.NS,Ambuja Cements Ltd,Construction Materials,Adani,Ambuja,INE079A01024,2026-10-04
+APOLLOHOSP,APOLLOHOSP.NS,Apollo Hospitals Enterprise Ltd,Healthcare,,Apollo|Apollo Hospitals,INE437A01024,2026-10-04
+ASIANPAINT,ASIANPAINT.NS,Asian Paints Ltd,Consumer Durables,,Asian Paints,INE021A01026,2026-10-04
+DMART,DMART.NS,Avenue Supermarts Ltd,Consumer Services,,D-Mart|Avenue Supermarts,INE192R01011,2026-10-04
+AXISBANK,AXISBANK.NS,Axis Bank Ltd,Financial Services,,Axis|Axis Bank,INE238A01034,2026-10-04
+BSE,BSE.NS,BSE Ltd,Financial Services,,Bombay Stock Exchange,INE118H01025,2026-10-04
+BAJAJ-AUTO,BAJAJ-AUTO.NS,Bajaj Auto Ltd,Automobile and Auto Components,Bajaj,Bajaj Auto,INE917I01010,2026-10-04
+BAJFINANCE,BAJFINANCE.NS,Bajaj Finance Ltd,Financial Services,Bajaj,Bajaj Finance,INE296A01032,2026-10-04
+BAJAJFINSV,BAJAJFINSV.NS,Bajaj Finserv Ltd,Financial Services,Bajaj,Bajaj Finserv,INE918I01026,2026-10-04
+BAJAJHLDNG,BAJAJHLDNG.NS,Bajaj Holdings & Investment Ltd,Financial Services,Bajaj,Bajaj Holdings,INE118A01012,2026-10-04
+BANKBARODA,BANKBARODA.NS,Bank of Baroda,Financial Services,,BoB|Bank of Baroda,INE028A01039,2026-10-04
+BEL,BEL.NS,Bharat Electronics Ltd,Capital Goods,,Bharat Electronics,INE263A01024,2026-10-04
+BPCL,BPCL.NS,Bharat Petroleum Corporation Ltd,Oil Gas & Consumable Fuels,,Bharat Petroleum,INE029A01011,2026-10-04
+BHARTIARTL,BHARTIARTL.NS,Bharti Airtel Ltd,Telecommunication,Bharti,Airtel|Bharti,INE397D01024,2026-10-04
+BOSCHLTD,BOSCHLTD.NS,Bosch Ltd,Automobile and Auto Components,,Bosch,INE323A01026,2026-10-04
+BRITANNIA,BRITANNIA.NS,Britannia Industries Ltd,Fast Moving Consumer Goods,,,INE216A01030,2026-10-04
+CGPOWER,CGPOWER.NS,CG Power and Industrial Solutions Ltd,Capital Goods,Murugappa,CG Power,INE067A01029,2026-10-04
+CANBK,CANBK.NS,Canara Bank,Financial Services,,Canara,INE476A01022,2026-10-04
+CHOLAFIN,CHOLAFIN.NS,Cholamandalam Investment and Finance Company Ltd,Financial Services,Murugappa,Chola|Cholamandalam,INE121A01024,2026-10-04
+CIPLA,CIPLA.NS,Cipla Ltd,Healthcare,,,INE059A01026,2026-10-04
+COALINDIA,COALINDIA.NS,Coal India Ltd,Oil Gas & Consumable Fuels,,CIL,INE522F01014,2026-10-04
+CUMMINSIND,CUMMINSIND.NS,Cummins India Ltd,Capital Goods,,Cummins,INE298A01020,2026-10-04
+DLF,DLF.NS,DLF Ltd,Realty,,,INE271C01023,2026-10-04
+DIVISLAB,DIVISLAB.NS,Divi's Laboratories Ltd,Healthcare,,Divis|Divi's Labs,INE361B01024,2026-10-04
+DRREDDY,DRREDDY.NS,Dr. Reddy's Laboratories Ltd,Healthcare,,Dr Reddy|Dr Reddys,INE089A01031,2026-10-04
+EICHERMOT,EICHERMOT.NS,Eicher Motors Ltd,Automobile and Auto Components,Eicher,Eicher|Royal Enfield,INE066A01021,2026-10-04
+ETERNAL,ETERNAL.NS,Eternal Ltd,Consumer Services,,Zomato|Blinkit,INE758T01015,2026-10-04
+GAIL,GAIL.NS,GAIL (India) Ltd,Oil Gas & Consumable Fuels,,Gas Authority,INE129A01019,2026-10-04
+GODREJCP,GODREJCP.NS,Godrej Consumer Products Ltd,Fast Moving Consumer Goods,Godrej,Godrej Consumer,INE102D01028,2026-10-04
+GRASIM,GRASIM.NS,Grasim Industries Ltd,Construction Materials,Aditya Birla,,INE047A01021,2026-10-04
+HCLTECH,HCLTECH.NS,HCL Technologies Ltd,Information Technology,,HCL|HCL Tech,INE860A01027,2026-10-04
+HDFCAMC,HDFCAMC.NS,HDFC Asset Management Company Ltd,Financial Services,HDFC,HDFC AMC|HDFC Mutual Fund,INE127D01025,2026-10-04
+HDFCBANK,HDFCBANK.NS,HDFC Bank Ltd,Financial Services,HDFC,HDFC Bank,INE040A01034,2026-10-04
+HDFCLIFE,HDFCLIFE.NS,HDFC Life Insurance Company Ltd,Financial Services,HDFC,HDFC Life,INE795G01014,2026-10-04
+HINDALCO,HINDALCO.NS,Hindalco Industries Ltd,Metals & Mining,Aditya Birla,,INE038A01020,2026-10-04
+HAL,HAL.NS,Hindustan Aeronautics Ltd,Capital Goods,,Hindustan Aeronautics,INE066F01020,2026-10-04
+HINDUNILVR,HINDUNILVR.NS,Hindustan Unilever Ltd,Fast Moving Consumer Goods,,HUL|Unilever,INE030A01027,2026-10-04
+HINDZINC,HINDZINC.NS,Hindustan Zinc Ltd,Metals & Mining,Vedanta,Hindustan Zinc,INE267A01025,2026-10-04
+POWERINDIA,POWERINDIA.NS,Hitachi Energy India Ltd,Capital Goods,,Hitachi Energy|ABB Power,INE07Y701011,2026-10-04
+HYUNDAI,HYUNDAI.NS,Hyundai Motor India Ltd,Automobile and Auto Components,,Hyundai|Hyundai India,INE0V6F01027,2026-10-04
+ICICIBANK,ICICIBANK.NS,ICICI Bank Ltd,Financial Services,,ICICI|ICICI Bank,INE090A01021,2026-10-04
+ITC,ITC.NS,ITC Ltd,Fast Moving Consumer Goods,,,INE154A01025,2026-10-04
+IOC,IOC.NS,Indian Oil Corporation Ltd,Oil Gas & Consumable Fuels,,IOCL|Indian Oil,INE242A01010,2026-10-04
+IRFC,IRFC.NS,Indian Railway Finance Corporation Ltd,Financial Services,,Indian Railway Finance,INE053F01010,2026-10-04
+INFY,INFY.NS,Infosys Ltd,Information Technology,,Infosys,INE009A01021,2026-10-04
+INDIGO,INDIGO.NS,InterGlobe Aviation Ltd,Services,,IndiGo|InterGlobe,INE646L01027,2026-10-04
+JSWSTEEL,JSWSTEEL.NS,JSW Steel Ltd,Metals & Mining,JSW,JSW Steel,INE019A01038,2026-10-04
+JINDALSTEL,JINDALSTEL.NS,Jindal Steel Ltd,Metals & Mining,Jindal,JSPL|Jindal Steel,INE749A01030,2026-10-04
+JIOFIN,JIOFIN.NS,Jio Financial Services Ltd,Financial Services,Reliance,Jio Financial|Jio Finance,INE758E01017,2026-10-04
+KOTAKBANK,KOTAKBANK.NS,Kotak Mahindra Bank Ltd,Financial Services,,Kotak|Kotak Bank,INE237A01036,2026-10-04
+LTM,LTM.NS,LTM Ltd,Information Technology,L&T,LTIMindtree|LTIM|Mindtree,INE214T01019,2026-10-04
+LT,LT.NS,Larsen & Toubro Ltd,Construction,L&T,L&T|Larsen|L and T,INE018A01030,2026-10-04
+M&M,M&M.NS,Mahindra & Mahindra Ltd,Automobile and Auto Components,Mahindra,Mahindra|M and M|MM,INE101A01026,2026-10-04
+MARUTI,MARUTI.NS,Maruti Suzuki India Ltd,Automobile and Auto Components,,Maruti|Maruti Suzuki,INE585B01010,2026-10-04
+MAXHEALTH,MAXHEALTH.NS,Max Healthcare Institute Ltd,Healthcare,,Max Healthcare|Max Hospital,INE027H01010,2026-10-04
+MAZDOCK,MAZDOCK.NS,Mazagoan Dock Shipbuilders Ltd,Capital Goods,,Mazagon Dock|Mazagon,INE249Z01020,2026-10-04
+MUTHOOTFIN,MUTHOOTFIN.NS,Muthoot Finance Ltd,Financial Services,,Muthoot,INE414G01012,2026-10-04
+NTPC,NTPC.NS,NTPC Ltd,Power,,,INE733E01010,2026-10-04
+NESTLEIND,NESTLEIND.NS,Nestle India Ltd,Fast Moving Consumer Goods,,Nestle,INE239A01024,2026-10-04
+ONGC,ONGC.NS,Oil & Natural Gas Corporation Ltd,Oil Gas & Consumable Fuels,,Oil and Natural Gas,INE213A01029,2026-10-04
+PIDILITIND,PIDILITIND.NS,Pidilite Industries Ltd,Chemicals,,Pidilite|Fevicol,INE318A01026,2026-10-04
+POLYCAB,POLYCAB.NS,Polycab India Ltd,Capital Goods,,,INE455K01017,2026-10-04
+PFC,PFC.NS,Power Finance Corporation Ltd,Financial Services,,Power Finance,INE134E01011,2026-10-04
+POWERGRID,POWERGRID.NS,Power Grid Corporation of India Ltd,Power,,Power Grid|PGCIL,INE752E01010,2026-10-04
+PNB,PNB.NS,Punjab National Bank,Financial Services,,Punjab National Bank,INE160A01022,2026-10-04
+RELIANCE,RELIANCE.NS,Reliance Industries Ltd,Oil Gas & Consumable Fuels,Reliance,RIL|Reliance,INE002A01018,2026-10-04
+SBILIFE,SBILIFE.NS,SBI Life Insurance Company Ltd,Financial Services,SBI,SBI Life,INE123W01016,2026-10-04
+MOTHERSON,MOTHERSON.NS,Samvardhana Motherson International Ltd,Automobile and Auto Components,,Motherson|Samvardhana,INE775A01035,2026-10-04
+SHRIRAMFIN,SHRIRAMFIN.NS,Shriram Finance Ltd,Financial Services,,Shriram,INE721A01047,2026-10-04
+ENRIN,ENRIN.NS,Siemens Energy India Ltd,Capital Goods,Siemens,Siemens Energy,INE1NPP01017,2026-10-04
+SIEMENS,SIEMENS.NS,Siemens Ltd,Capital Goods,Siemens,,INE003A01024,2026-10-04
+SOLARINDS,SOLARINDS.NS,Solar Industries India Ltd,Chemicals,,Solar Industries,INE343H01029,2026-10-04
+SBIN,SBIN.NS,State Bank of India,Financial Services,SBI,SBI|State Bank,INE062A01020,2026-10-04
+SUNPHARMA,SUNPHARMA.NS,Sun Pharmaceutical Industries Ltd,Healthcare,,Sun Pharma,INE044A01036,2026-10-04
+TVSMOTOR,TVSMOTOR.NS,TVS Motor Company Ltd,Automobile and Auto Components,TVS,TVS|TVS Motor,INE494B01023,2026-10-04
+TATACAP,TATACAP.NS,Tata Capital Ltd,Financial Services,Tata,Tata Capital,INE976I01016,2026-10-04
+TCS,TCS.NS,Tata Consultancy Services Ltd,Information Technology,Tata,Tata Consultancy,INE467B01029,2026-10-04
+TATACONSUM,TATACONSUM.NS,Tata Consumer Products Ltd,Fast Moving Consumer Goods,Tata,Tata Consumer,INE192A01025,2026-10-04
+TMCV,TMCV.NS,Tata Motors Ltd,Capital Goods,Tata,Tata Motors|TATAMOTORS|Tata Motors CV|Tata Commercial Vehicles,INE1TAE01010,2026-10-04
+TMPV,TMPV.NS,Tata Motors Passenger Vehicles Ltd,Automobile and Auto Components,Tata,Tata Motors|TATAMOTORS|Tata Motors PV|Tata Motors Passenger,INE155A01022,2026-10-04
+TATAPOWER,TATAPOWER.NS,Tata Power Co. Ltd,Power,Tata,Tata Power,INE245A01021,2026-10-04
+TATASTEEL,TATASTEEL.NS,Tata Steel Ltd,Metals & Mining,Tata,Tata Steel,INE081A01020,2026-10-04
+TECHM,TECHM.NS,Tech Mahindra Ltd,Information Technology,Mahindra,Tech Mahindra,INE669C01036,2026-10-04
+TITAN,TITAN.NS,Titan Company Ltd,Consumer Durables,Tata,Tanishq,INE280A01028,2026-10-04
+TORNTPHARM,TORNTPHARM.NS,Torrent Pharmaceuticals Ltd,Healthcare,Torrent,Torrent|Torrent Pharma,INE685A01028,2026-10-04
+TRENT,TRENT.NS,Trent Ltd,Consumer Services,Tata,Zudio|Westside,INE849A01020,2026-10-04
+ULTRACEMCO,ULTRACEMCO.NS,UltraTech Cement Ltd,Construction Materials,Aditya Birla,UltraTech,INE481G01011,2026-10-04
+UNIONBANK,UNIONBANK.NS,Union Bank of India,Financial Services,,Union Bank,INE692A01016,2026-10-04
+VBL,VBL.NS,Varun Beverages Ltd,Fast Moving Consumer Goods,,Varun Beverages|Varun,INE200M01039,2026-10-04
+VAML,VAML.NS,Vedanta Aluminium Metal Ltd,Metals & Mining,Vedanta,Vedanta Aluminium,INE1CDF01017,2026-10-04
+VEDL,VEDL.NS,Vedanta Ltd,Metals & Mining,Vedanta,Vedanta Ltd,INE205A01025,2026-10-04
+IDEA,IDEA.NS,Vodafone Idea Ltd,Telecommunication,Aditya Birla,Vi|Vodafone|Vodafone Idea,INE669E01016,2026-10-04
+WIPRO,WIPRO.NS,Wipro Ltd,Information Technology,,,INE075A01022,2026-10-04
+ZYDUSLIFE,ZYDUSLIFE.NS,Zydus Lifesciences Ltd,Healthcare,,Zydus|Cadila,INE010B01027,2026-10-04

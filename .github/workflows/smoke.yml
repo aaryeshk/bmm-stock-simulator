@@ -1,0 +1,37 @@
+name: Smoke test
+
+# Opens the deployed app (URL in deploy/url.txt) in a headless browser: search, both dashboards,
+# Excel download. Screenshots and the report are uploaded as an artifact.
+on:
+  push:
+    paths:
+      - deploy/url.txt
+      - scripts/smoke_test.py
+      - .github/workflows/smoke.yml
+  schedule:
+    - cron: "7 5 * * 1"  # Mondays 10:37 IST
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: url
+        run: |
+          url=$(grep -v '^#' deploy/url.txt | head -n1 | tr -d '[:space:]')
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          if [ -z "$url" ]; then echo "No URL in deploy/url.txt yet; skipping."; fi
+      - uses: actions/setup-python@v5
+        if: steps.url.outputs.url != ''
+        with:
+          python-version: "3.12"
+      - if: steps.url.outputs.url != ''
+        run: pip install playwright==1.63.0 && python -m playwright install --with-deps chromium
+      - if: steps.url.outputs.url != ''
+        run: python scripts/smoke_test.py "${{ steps.url.outputs.url }}" smoke
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.url.outputs.url != ''
+        with:
+          name: smoke-test
+          path: smoke/

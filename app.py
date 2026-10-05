@@ -22,7 +22,7 @@ from bmm.trend import (
     Assumptions,
     compute_trend,
 )
-from bmm.ui import market_now
+from bmm.ui import market_now, path_trace
 from bmm.universe import Stock, as_of, stocks
 
 DISCLAIMER = (
@@ -208,8 +208,11 @@ else:
             market_now.render(prices, index, trend, trend_error, status, news, sentiment,
                               manual_news)
     with paths:
-        st.info("1,000 simulated price paths (naive bootstrap vs scientific GBM), the 5–95% cone, "
-                "terminal distribution and backtest arrive in Phase 5.")
+        if trend is None:
+            st.info("Load prices to simulate paths." if prices is None
+                    else f"Trend not available: {trend_error}")
+        else:
+            path_trace.render(prices, index, trend, assumptions)
     with third:
         st.info("Coming soon.")
 

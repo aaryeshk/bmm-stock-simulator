@@ -22,7 +22,7 @@ pytest -q
 | 2 | Data layer (Yahoo prices + headlines, cache, CSV fallback) | Done |
 | 3 | Trend engine (μ, σ) | Done |
 | 4 | Dashboard 1: Market now | Done |
-| 5 | Dashboard 2: BMM path trace | |
+| 5 | Dashboard 2: BMM path trace | Done |
 | 6 | Excel export | |
 | 7 | Dashboard 3 placeholder | |
 | 8 | Package + deploy | |
@@ -105,6 +105,31 @@ editable in the sidebar.
 
 Works in light and dark mode and at phone width (`docs/screenshots/9`–`12`).
 
+## Dashboard 2: BMM path trace
+
+![BMM path trace](docs/screenshots/13_path_trace_light.png)
+
+1,000 paths, dt = 1/255, horizon 20–120 trading days (default 60), seed 42 by default.
+
+| Method | Step |
+|---|---|
+| Scientific, Exact (default) | S(t+1) = S(t) · exp((μ − σ²/2)·dt + σ·√dt·ε) |
+| Scientific, Euler (class workbook) | S(t+1) = S(t) · (1 + μ·dt + σ·√dt·ε) |
+| Naive bootstrap (class Sheet 1) | S(t+1) = S(t) · exp(a randomly drawn historical daily log return) |
+
+Random draws follow `reference/bmm_export.py` exactly (`default_rng(seed)`: shocks first, then
+bootstrap rows), so the app and the Excel export produce the same paths. On the class data
+`tests/test_simulate.py` reproduces the verified sample path for path (all 60,000 scientific
+and 60,000 naive values, the Bands and Summary sheets) to ~1e-12: median day-60 ₹1,300,
+P(below spot) 57%.
+
+The tab shows the outcome tiles (median, P(below spot), 90% range, P(±10%)), the 5–95% and
+25–75% cone with 20 sample paths and recent history, the day-H price distribution for both
+methods, a naive-vs-scientific table, validation against closed-form GBM theory, and a rolling
+backtest: μ and σ re-estimated from prices up to each start date only (no look-ahead), scored on
+whether the actual price landed inside the 5–95% range, how many days it stayed inside the
+band, and whether the direction was right.
+
 ## Layout
 
 ```
@@ -119,6 +144,8 @@ bmm/trend.py               μ and σ, beta, technicals, "why" lines
 bmm/sentiment.py           Headline scoring (VADER + finance lexicons)
 bmm/dashboard.py           Day change, 52-week range, momentum, chart data
 bmm/ui/market_now.py       Dashboard 1 rendering
+bmm/simulate.py            GBM and bootstrap paths, summaries, theory, backtest
+bmm/ui/path_trace.py       Dashboard 2 rendering
 data/nifty100.csv          Universe snapshot
 data/snapshots/            Bundled demo prices (Reliance, Nifty 50)
 data/*_lexicon.csv         Sentiment word lists

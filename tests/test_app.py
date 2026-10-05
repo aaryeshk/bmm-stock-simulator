@@ -178,3 +178,42 @@ def test_trend_delta_starts_with_its_sign(app):
     search(app, "RIL")
     delta = {x.label: x.delta for x in app.metric}["Trend"]
     assert delta[0] in "+-" and delta.endswith("a year (μ)")
+
+
+# --- Dashboard 2: BMM path trace ------------------------------------------------------------------
+
+def snapshot_sim(horizon=60, method="Exact", seed=42):
+    from bmm.data import load_snapshot
+    from bmm.simulate import simulate, summary
+    from bmm.trend import log_returns
+
+    t = snapshot_trend()
+    rets = log_returns(load_snapshot("RELIANCE").adj_close).to_numpy()
+    return summary(simulate(t.spot, t.mu, t.sigma, rets, horizon, 1000, seed, method))
+
+
+def test_path_trace_tiles_match_a_direct_simulation(app):
+    search(app, "RIL")
+    s = snapshot_sim()["scientific"]
+    m = metrics(app)
+    assert m["Median price, day 60 (₹)"] == f"{s['median']:,.2f}"
+    assert m["P(ends below spot)"] == f"{s['p_below']:.1%}"
+    assert m["90% range (5th–95th pct)"] == f"{s['p5']:,.0f} – {s['p95']:,.0f}"
+    assert "Actual end price inside the 5–95% range" in m   # backtest ran
+    tables = [d.value for d in app.dataframe]
+    comparison = next(t for t in tables if "Outcome at horizon" in t.columns)
+    assert comparison.iloc[1]["Scientific"] == f"{s['median']:,.2f}"
+
+
+def test_horizon_method_and_seed_controls(app):
+    search(app, "RIL")
+    app.slider(key="sim_horizon").set_value(120).run()
+    exact = snapshot_sim(120)["scientific"]
+    assert metrics(app)["Median price, day 120 (₹)"] == f"{exact['median']:,.2f}"
+    app.radio(key="sim_method").set_value("Euler").run()
+    euler = snapshot_sim(120, "Euler")["scientific"]
+    assert metrics(app)["Median price, day 120 (₹)"] == f"{euler['median']:,.2f}"
+    app.number_input(key="sim_seed").set_value(7).run()
+    seeded = snapshot_sim(120, "Euler", 7)["scientific"]
+    assert metrics(app)["P(ends below spot)"] == f"{seeded['p_below']:.1%}"
+    assert not app.exception

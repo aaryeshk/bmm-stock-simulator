@@ -236,3 +236,9 @@ def test_excel_export_builds_and_offers_a_download(app):
     app.slider(key="sim_horizon").set_value(90).run()      # stale after a change
     assert not app.get("download_button")
     assert any("Build it again" in c.value for c in app.caption)
+
+
+def test_dashboard_3_is_a_coming_soon_placeholder(app):
+    search(app, "RIL")
+    assert any("Dashboard 3: Coming soon" in md.value for md in app.markdown)
+    assert any("reserved for the third dashboard" in i.value for i in app.info)

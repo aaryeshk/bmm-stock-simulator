@@ -219,7 +219,9 @@ else:
             path_trace.render(prices, index, trend, assumptions, stock.symbol, stock.name,
                               news_note)
     with third:
-        st.info("Coming soon.")
+        st.markdown("#### Dashboard 3: Coming soon")
+        st.info("This tab is reserved for the third dashboard. Market now (Dashboard 1) and "
+                "BMM path trace (Dashboard 2) are live; this one is next on the roadmap.")
 
 st.divider()
 st.caption(DISCLAIMER)

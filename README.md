@@ -5,6 +5,10 @@ Brownian motion model (naive bootstrap vs scientific GBM), with a class-layout E
 
 > Educational model of stock price movement only. Not investment advice or a forecast.
 
+## Deploy
+
+Streamlit Community Cloud, step by step: [DEPLOY.md](DEPLOY.md).
+
 ## Run locally
 
 ```bash
@@ -24,8 +28,8 @@ pytest -q
 | 4 | Dashboard 1: Market now | Done |
 | 5 | Dashboard 2: BMM path trace | Done |
 | 6 | Excel export | Done |
-| 7 | Dashboard 3 placeholder | |
-| 8 | Package + deploy | |
+| 7 | Dashboard 3 placeholder | Done |
+| 8 | Package + deploy | Ready: see [DEPLOY.md](DEPLOY.md) |
 
 ## Stock search
 
@@ -172,6 +176,8 @@ data/snapshots/            Bundled demo prices (Reliance, Nifty 50)
 data/*_lexicon.csv         Sentiment word lists
 scripts/check_universe.py  Official-list and Yahoo check (run by CI)
 scripts/make_snapshot.py   Refreshes data/snapshots (run by CI)
+scripts/smoke_test.py      Headless end-to-end check of a deployed copy (run by CI)
+deploy/url.txt             The deployed app's URL, for the smoke test
 reference/                 Class workbook, verified sample export, Excel export spec
 tests/                     Unit, headless app and live-data tests
 docs/screenshots/          Headless screenshots of the app

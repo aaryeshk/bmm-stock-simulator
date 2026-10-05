@@ -8,6 +8,7 @@ on:
       - bmm/**
       - tests/test_excel.py
       - tests/fixtures/**
+      - requirements*.txt
       - .github/workflows/excel.yml
   pull_request:
   workflow_dispatch:

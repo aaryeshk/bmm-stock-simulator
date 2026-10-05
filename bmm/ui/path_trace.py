@@ -7,6 +7,7 @@ import pandas as pd
 import streamlit as st
 
 from bmm.data import PriceHistory
+from bmm.excel import build_workbook, filename
 from bmm.simulate import (
     HORIZON_DEFAULT,
     HORIZON_MAX,
@@ -238,8 +239,38 @@ def backtest_section(prices: PriceHistory, index: PriceHistory | None, horizon: 
         st.dataframe(table, hide_index=True, width="stretch")
 
 
+def excel_section(ticker: str, company: str, prices: PriceHistory,
+                  index: PriceHistory | None, trend: Trend, sim: Simulation,
+                  news_note: str) -> None:
+    st.markdown("#### Excel export (class-workbook layout)")
+    st.caption("Inputs, Prices, Shocks, Paths, NaiveDraws, Naive, Bands, RandDemo and Summary "
+               "sheets. The shocks and naive draws are this run's, stored as values, so the "
+               "workbook shows these exact paths; every other cell is a live formula.")
+    key = (ticker, len(prices), str(prices.end), sim.horizon, sim.method, sim.seed,
+           round(trend.mu, 12), round(trend.sigma, 12), trend.sigma_method)
+    if st.button("Build Excel workbook", key="xl_build"):
+        with st.spinner("Writing about 130,000 formulas…"):
+            data_note = (f"{prices.source_label}: adjusted closes {prices.start:%d-%b-%Y} to "
+                         f"{prices.end:%d-%b-%Y} ({len(prices)} days)."
+                         + (f" Nifty 50: {index.source_label}." if index else
+                            " Nifty 50 unavailable: beta set to 1.0."))
+            st.session_state["xl"] = (key, build_workbook(
+                ticker=ticker, company=company, prices=prices.adj_close,
+                index=index.adj_close if index else None, trend=trend, sim=sim,
+                news_note=news_note, data_note=data_note))
+    held = st.session_state.get("xl")
+    if held and held[0] == key:
+        st.download_button("Download .xlsx", held[1], filename(ticker, sim.horizon, prices.end),
+                           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                           key="xl_download", type="primary")
+    elif held:
+        st.caption("Inputs have changed since the workbook was built. Build it again to export "
+                   "the current run.")
+
+
 def render(prices: PriceHistory, index: PriceHistory | None, trend: Trend,
-           assumptions: Assumptions) -> Simulation:
+           assumptions: Assumptions, ticker: str = "", company: str = "",
+           news_note: str = "") -> Simulation:
     horizon, method, seed = controls()
     rets = log_returns(prices.adj_close)
     sim = _run(trend.spot, trend.mu, trend.sigma, tuple(rets), horizon, seed, method)
@@ -267,5 +298,6 @@ def render(prices: PriceHistory, index: PriceHistory | None, trend: Trend,
         st.dataframe(validation_table(sim), hide_index=True, width="stretch")
         st.caption("Gaps of a few percent are sampling noise from 1,000 paths. Theory assumes "
                    "the Exact step; Euler shifts it slightly.")
+    excel_section(ticker, company or ticker, prices, index, trend, sim, news_note)
     backtest_section(prices, index, horizon, assumptions, method, seed)
     return sim

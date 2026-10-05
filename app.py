@@ -212,7 +212,12 @@ else:
             st.info("Load prices to simulate paths." if prices is None
                     else f"Trend not available: {trend_error}")
         else:
-            path_trace.render(prices, index, trend, assumptions)
+            news_note = (f"Manual score {manual_news:+.2f}." if manual_news is not None else
+                         f"Score {sentiment.score:+.2f} from {sentiment.count} headlines of the "
+                         "last 14 days (VADER + Loughran-McDonald + market-move words)."
+                         if sentiment.count else "No recent headlines: score 0.")
+            path_trace.render(prices, index, trend, assumptions, stock.symbol, stock.name,
+                              news_note)
     with third:
         st.info("Coming soon.")
 

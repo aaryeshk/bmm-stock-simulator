@@ -23,7 +23,7 @@ pytest -q
 | 3 | Trend engine (μ, σ) | Done |
 | 4 | Dashboard 1: Market now | Done |
 | 5 | Dashboard 2: BMM path trace | Done |
-| 6 | Excel export | |
+| 6 | Excel export | Done |
 | 7 | Dashboard 3 placeholder | |
 | 8 | Package + deploy | |
 
@@ -130,6 +130,25 @@ backtest: μ and σ re-estimated from prices up to each start date only (no look
 whether the actual price landed inside the 5–95% range, how many days it stayed inside the
 band, and whether the direction was right.
 
+## Excel export
+
+**BMM path trace → Build Excel workbook → Download .xlsx** gives the class-workbook layout of
+`reference/bmm_export.py`: ReadMe, Inputs (μ/σ/dt and every assumption, blue = editable),
+Summary, Prices, Shocks, Paths, NaiveDraws, Naive, Bands (with charts) and RandDemo. The shocks
+and naive draws are the app's own run, stored as values, so the workbook shows the same paths
+as the app; everything else is a live formula. Changing a blue input (method, r, weights, news
+score…) recalculates the whole model in Excel.
+
+Additions to the reference layout: EWMA volatility (Inputs row 18, λ in C18), the ±30% drift
+limit (row 31, applied in B28), blank Nifty returns on days the Nifty has no price, and a
+RandDemo sheet with 20 live `NORMSINV(RAND())` paths (F9 redraws; these intentionally differ
+from the app).
+
+Verified by `tests/test_excel.py` and the [Excel](.github/workflows/excel.yml) workflow, which
+recalculate the workbook in LibreOffice Calc: 0 errors in ~126,000 formulas, and on the class
+data every one of ~123,000 numeric cells equals the verified sample
+(`reference/BMM_RELIANCE_60d_sample.xlsx`) and the app.
+
 ## Layout
 
 ```
@@ -145,7 +164,9 @@ bmm/sentiment.py           Headline scoring (VADER + finance lexicons)
 bmm/dashboard.py           Day change, 52-week range, momentum, chart data
 bmm/ui/market_now.py       Dashboard 1 rendering
 bmm/simulate.py            GBM and bootstrap paths, summaries, theory, backtest
-bmm/ui/path_trace.py       Dashboard 2 rendering
+bmm/ui/path_trace.py       Dashboard 2 rendering and the Excel export button
+bmm/excel.py               Class-layout workbook builder
+bmm/recalc.py              LibreOffice recalculation + formula-error scan
 data/nifty100.csv          Universe snapshot
 data/snapshots/            Bundled demo prices (Reliance, Nifty 50)
 data/*_lexicon.csv         Sentiment word lists

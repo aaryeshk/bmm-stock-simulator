@@ -217,7 +217,12 @@ def test_beta_uses_only_overlapping_dates(class_data):
     stock, index = class_data
     gappy = index.drop(index.index[::7])  # index missing every 7th day
     t = compute_trend(stock, gappy)
-    assert 0.8 < t.beta < 1.4 and str(len(gappy) - 1) in t.beta_note
+    # A pair needs the index on the day and on the stock's previous day: each gap drops 2 pairs.
+    s_ret = np.log(stock / stock.shift(1))
+    i_ret = np.log(gappy.reindex(stock.index) / gappy.reindex(stock.index).shift(1))
+    pairs = pd.concat([s_ret, i_ret], axis=1).dropna()
+    assert 0.8 < t.beta < 1.4 and f"Regression of {len(pairs)} daily" in t.beta_note
+    assert t.beta == pytest.approx(np.polyfit(pairs.iloc[:, 1], pairs.iloc[:, 0], 1)[0])
 
 
 # --- The "why" panel matches the inputs --------------------------------------------------------

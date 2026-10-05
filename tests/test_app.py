@@ -217,3 +217,22 @@ def test_horizon_method_and_seed_controls(app):
     seeded = snapshot_sim(120, "Euler", 7)["scientific"]
     assert metrics(app)["P(ends below spot)"] == f"{seeded['p_below']:.1%}"
     assert not app.exception
+
+
+def test_excel_export_builds_and_offers_a_download(app):
+    import io
+
+    from openpyxl import load_workbook
+
+    search(app, "RIL")
+    assert not app.get("download_button")
+    app.button(key="xl_build").click().run()
+    assert not app.exception
+    data = app.session_state["xl"][1]
+    wb = load_workbook(io.BytesIO(data))
+    assert wb["Inputs"]["B4"].value == "RELIANCE" and wb["Inputs"]["B10"].value == 60
+    assert "No recent headlines" in wb["ReadMe"]["B11"].value
+    assert app.get("download_button")
+    app.slider(key="sim_horizon").set_value(90).run()      # stale after a change
+    assert not app.get("download_button")
+    assert any("Build it again" in c.value for c in app.caption)

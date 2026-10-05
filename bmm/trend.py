@@ -137,10 +137,14 @@ def sigma_ewma(rets: pd.Series, lam: float = 0.94, days_per_year: int = DAYS_PER
 
 
 def beta_vs_index(stock: pd.Series, index: pd.Series | None) -> tuple[float, str]:
-    """SLOPE of stock log returns on index log returns, on dates both series have."""
+    """SLOPE of stock log returns on index log returns, as the Excel export computes it.
+
+    The index is lined up on the stock's trading dates; a day's pair is used only when the
+    index has a price on that day and on the stock's previous trading day (Excel's SLOPE skips
+    the blank cells the export leaves on other days)."""
     if index is None:
         return 1.0, "Nifty 50 data unavailable, so beta is set to 1.0."
-    both = pd.concat({"s": stock, "i": index}, axis=1, join="inner").dropna()
+    both = pd.DataFrame({"s": stock, "i": index.reindex(stock.index)})
     rets = np.log(both / both.shift(1)).dropna()
     if len(rets) < 30:
         return 1.0, f"Only {len(rets)} overlapping days with the Nifty 50, so beta is set to 1.0."

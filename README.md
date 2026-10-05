@@ -20,7 +20,7 @@ pytest -q
 |---|---|---|
 | 1 | Search + Nifty 100 universe | Done |
 | 2 | Data layer (Yahoo prices + headlines, cache, CSV fallback) | Done |
-| 3 | Trend engine (μ, σ) | |
+| 3 | Trend engine (μ, σ) | Done |
 | 4 | Dashboard 1: Market now | |
 | 5 | Dashboard 2: BMM path trace | |
 | 6 | Excel export | |
@@ -65,6 +65,31 @@ fine. At least 60 trading days, ideally 2 years.
 by the [Live data](.github/workflows/live-data.yml) workflow (`BMM_LIVE=1 pytest tests/test_live.py`)
 on weekdays after the close and whenever the data code changes.
 
+## Trend engine
+
+Mirrors the class-layout workbook's Inputs sheet formula for formula; `tests/test_trend.py`
+reproduces every value of the verified sample (`reference/BMM_RELIANCE_60d_sample.xlsx`: final
+μ −7.1%, σ 21.1%, β 1.06) to 1e-12.
+
+| Quantity | Formula (255 trading days a year) |
+|---|---|
+| σ lookback (default) | STDEV(daily log returns) × √255 |
+| σ 30-day / EWMA | Last 30 returns / RiskMetrics λ 0.94, both × √255 |
+| Historical drift | mean daily log return × 255 + σ²/2 |
+| 3- / 6-month momentum | ln(S₀ / S₋₆₃) × 255/63 + σ²/2, ln(S₀ / S₋₁₂₆) × 255/126 + σ²/2 |
+| CAPM | r + β × ERP; r = 5.34% (91-day T-bill), ERP 7%; β = SLOPE of stock vs Nifty 50 log returns |
+| Price-trend μ | Weighted average (0.25 each, editable) |
+| News adjustment | sentiment score (−1…+1) × 10% cap |
+| Final μ | price-trend μ + news, clamped to ±30%; label Bearish / Neutral / Bullish at ±5% |
+
+**Sentiment.** VADER, with the Loughran-McDonald finance word list (data/lm_lexicon.csv, from the
+Notre Dame SRAF Master Dictionary via pysentiment2) added where VADER has no entry, and a small
+market-move list (data/market_lexicon.csv: falls, slumps, surges, upgrade, 52-week low/high…)
+that overrides both. Plain VADER scores "stock falls 3%, Nifty slumps to six-month low" as
+positive; this scores it −0.65. The stock's score is the average headline score, scaled down
+when there are fewer than 5 headlines. Every assumption, including a manual news score, is
+editable in the sidebar.
+
 ## Layout
 
 ```
@@ -75,8 +100,11 @@ bmm/data.py                Prices: Yahoo, snapshot fallback, CSV upload
 bmm/news.py                Headlines: Yahoo Finance + Google News
 bmm/market.py              NSE open/closed/holiday status in IST
 bmm/cache.py               15-minute TTL cache
+bmm/trend.py               μ and σ, beta, technicals, "why" lines
+bmm/sentiment.py           Headline scoring (VADER + finance lexicons)
 data/nifty100.csv          Universe snapshot
 data/snapshots/            Bundled demo prices (Reliance, Nifty 50)
+data/*_lexicon.csv         Sentiment word lists
 scripts/check_universe.py  Official-list and Yahoo check (run by CI)
 scripts/make_snapshot.py   Refreshes data/snapshots (run by CI)
 reference/                 Class workbook, verified sample export, Excel export spec

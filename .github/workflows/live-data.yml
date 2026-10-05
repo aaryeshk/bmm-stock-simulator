@@ -23,6 +23,6 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -r requirements-dev.txt
-      - run: pytest -v tests/test_live.py
+      - run: pytest -v -s tests/test_live.py
         env:
           BMM_LIVE: "1"

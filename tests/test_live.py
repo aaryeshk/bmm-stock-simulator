@@ -35,3 +35,16 @@ def test_live_headlines():
     result = get_headlines("RELIANCE.NS", "Reliance Industries Ltd")
     assert result.headlines, result.notes
     assert all(recent(x.published.tz_localize(None), days=14) for x in result.headlines)
+
+
+def test_live_trend_from_real_data():
+    from bmm.sentiment import score_headlines
+    from bmm.trend import compute_trend
+
+    stock, index = get_prices("RELIANCE", "RELIANCE.NS"), get_index_prices()
+    sentiment = score_headlines(get_headlines("RELIANCE.NS", "Reliance Industries Ltd").headlines)
+    assert sentiment.count > 0 and -1 <= sentiment.score <= 1
+    t = compute_trend(stock.adj_close, index.adj_close, sentiment.score)
+    assert 0.05 < t.sigma < 1.0 and 0.3 < t.beta < 2.5 and abs(t.mu) <= 0.30
+    print(f"RELIANCE live: {t.label} mu {t.mu:+.1%} sigma {t.sigma:.1%} beta {t.beta:.2f} "
+          f"news {sentiment.score:+.2f} from {sentiment.count} headlines")

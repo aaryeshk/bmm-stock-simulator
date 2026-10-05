@@ -76,3 +76,54 @@ def test_other_stocks_ask_for_an_upload_when_offline(app):
 def test_market_status_is_shown(app):
     search(app, "TCS")
     assert any("NSE:" in c.value for c in app.caption)
+
+
+def snapshot_trend(**changes):
+    from bmm.data import load_snapshot
+    from bmm.trend import Assumptions, compute_trend
+
+    stock, index = load_snapshot("RELIANCE"), load_snapshot("^NSEI")
+    news = changes.pop("news_score", 0.0)  # offline: no headlines, so automatic score is 0
+    return compute_trend(stock.adj_close, index.adj_close, news, Assumptions().with_(**changes))
+
+
+def metrics(app):
+    return {m.label: m.value for m in app.metric}
+
+
+def test_trend_panel_shows_the_engine_numbers(app):
+    search(app, "RIL")
+    t = snapshot_trend()
+    m = metrics(app)
+    assert m["Trend"] == t.label
+    assert m["Final drift μ (annual)"] == f"{t.mu:+.1%}"
+    assert m["Volatility σ (annual)"] == f"{t.sigma:.1%}"
+    assert m["Beta vs Nifty 50"] == f"{t.beta:.2f}"
+    why = " ".join(md.value for md in app.markdown)
+    assert f"final drift μ = {t.mu:+.1%}" in why
+
+
+def test_manual_news_score_moves_mu_by_score_times_cap(app):
+    search(app, "RIL")
+    app.radio(key="a::news_mode").set_value("Manual").run()
+    app.slider(key="a::news_manual").set_value(-0.5).run()
+    t = snapshot_trend(news_score=-0.5)
+    assert metrics(app)["Final drift μ (annual)"] == f"{t.mu:+.1%}"
+    assert t.news_adjustment == -0.05
+
+
+def test_switching_sigma_method_updates_sigma(app):
+    search(app, "RIL")
+    app.radio(key="a::sigma").set_value("ewma").run()
+    t = snapshot_trend(sigma_method="ewma")
+    assert metrics(app)["Volatility σ (annual)"] == f"{t.sigma:.1%}"
+
+
+def test_changing_risk_free_rate_changes_capm(app):
+    search(app, "RIL")
+    app.number_input(key="a::risk_free").set_value(8.0).run()
+    t = snapshot_trend(risk_free=0.08)
+    assert metrics(app)["Final drift μ (annual)"] == f"{t.mu:+.1%}"
+    table = app.dataframe[0].value
+    capm = table.loc[table["Component"] == "CAPM expected return", "How"].iloc[0]
+    assert capm.startswith("r 8.00%")

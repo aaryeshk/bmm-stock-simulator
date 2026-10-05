@@ -21,7 +21,7 @@ pytest -q
 | 1 | Search + Nifty 100 universe | Done |
 | 2 | Data layer (Yahoo prices + headlines, cache, CSV fallback) | Done |
 | 3 | Trend engine (μ, σ) | Done |
-| 4 | Dashboard 1: Market now | |
+| 4 | Dashboard 1: Market now | Done |
 | 5 | Dashboard 2: BMM path trace | |
 | 6 | Excel export | |
 | 7 | Dashboard 3 placeholder | |
@@ -90,6 +90,21 @@ positive; this scores it −0.65. The stock's score is the average headline scor
 when there are fewer than 5 headlines. Every assumption, including a manual news score, is
 editable in the sidebar.
 
+## Dashboard 1: Market now
+
+![Market now](docs/screenshots/9_market_now_light.png)
+
+| Section | What it shows |
+|---|---|
+| Headline tiles | Last price and day change (labelled "today, session in progress" or "last session"), trend label and μ, volatility σ with 30-day regime, position in the 52-week range |
+| 52-week range | Low, high and dates, with today's price marked on a meter |
+| Momentum | 1M / 3M / 6M / 1Y price return, each compared with the Nifty 50 over the same dates |
+| Price chart | Adjusted close with 50- and 200-day averages, 6M / 1Y / 2Y, hover tooltip |
+| Trend | Final μ, price-trend μ, news adjustment, beta and the "Why this trend?" breakdown |
+| Headlines | Last 14 days with each headline's sentiment score |
+
+Works in light and dark mode and at phone width (`docs/screenshots/9`–`12`).
+
 ## Layout
 
 ```
@@ -102,6 +117,8 @@ bmm/market.py              NSE open/closed/holiday status in IST
 bmm/cache.py               15-minute TTL cache
 bmm/trend.py               μ and σ, beta, technicals, "why" lines
 bmm/sentiment.py           Headline scoring (VADER + finance lexicons)
+bmm/dashboard.py           Day change, 52-week range, momentum, chart data
+bmm/ui/market_now.py       Dashboard 1 rendering
 data/nifty100.csv          Universe snapshot
 data/snapshots/            Bundled demo prices (Reliance, Nifty 50)
 data/*_lexicon.csv         Sentiment word lists

@@ -127,3 +127,54 @@ def test_changing_risk_free_rate_changes_capm(app):
     table = app.dataframe[0].value
     capm = table.loc[table["Component"] == "CAPM expected return", "How"].iloc[0]
     assert capm.startswith("r 8.00%")
+
+
+# --- Dashboard 1: Market now ---------------------------------------------------------------------
+
+def test_market_now_tiles_match_the_numbers(app):
+    from bmm.dashboard import momentum, range_52w
+    from bmm.data import load_snapshot
+
+    search(app, "RIL")
+    s, i = load_snapshot("RELIANCE").adj_close, load_snapshot("^NSEI").adj_close
+    m = metrics(app)
+    assert m["Last price (₹)"] == f"{s.iloc[-1]:,.2f}"
+    assert m["Trend"] == snapshot_trend().label
+    assert m["52-week position"] == f"{range_52w(s).position:.0%} of range"
+    for mo in momentum(s, i):
+        assert m[f"{mo.window} return"] == f"{mo.stock:+.1%}"
+    deltas = {x.label: x.delta for x in app.metric}
+    one_month = next(mo for mo in momentum(s, i) if mo.window == "1M")
+    assert deltas["1M return"] == f"{one_month.relative * 100:+.1f} pts vs Nifty"
+    assert any("52-week range" in md.value for md in app.markdown)
+    assert app.get("vega_lite_chart"), "price chart missing"
+
+
+def test_chart_range_control_switches_window(app):
+    search(app, "RIL")
+    for window in ("6M", "2Y", "1Y"):
+        app.segmented_control(key="chart_range").set_value(window).run()
+        assert not app.exception
+
+
+def test_short_history_still_renders(app, monkeypatch):
+    import numpy as np
+    import pandas as pd
+
+    from bmm import data
+
+    idx = pd.bdate_range("2026-05-01", periods=100)
+    frame = pd.DataFrame({"adj_close": 100 * np.exp(np.linspace(0, 0.1, 100))}, index=idx)
+    fake = data.PriceHistory("INFY", frame, "upload", pd.Timestamp.now(tz="UTC"))
+    monkeypatch.setattr(data, "get_prices", lambda *a, **k: fake)
+    search(app, "INFY")
+    m = metrics(app)
+    assert m["1M return"] != "n/a" and m["6M return"] == "n/a" and m["1Y return"] == "n/a"
+    assert m["Trend"] in {"Bearish", "Neutral", "Bullish"}
+
+
+def test_trend_delta_starts_with_its_sign(app):
+    # Streamlit colours the delta arrow from its first character: "μ -15%" showed a green arrow.
+    search(app, "RIL")
+    delta = {x.label: x.delta for x in app.metric}["Trend"]
+    assert delta[0] in "+-" and delta.endswith("a year (μ)")

@@ -1,7 +1,6 @@
 """BMM Stock Simulator: Nifty 100 search, market dashboard and Brownian-motion price paths."""
 from __future__ import annotations
 
-import pandas as pd
 import streamlit as st
 
 from bmm.data import (
@@ -12,18 +11,18 @@ from bmm.data import (
     get_index_prices,
     get_prices,
 )
-from bmm.market import is_stale, market_status
-from bmm.news import News, get_headlines
+from bmm.market import MarketStatus, is_stale, market_status
+from bmm.news import get_headlines
 from bmm.search import Status, resolve
-from bmm.sentiment import Sentiment, score_headlines
+from bmm.sentiment import score_headlines
 from bmm.trend import (
     COMPONENT_LABELS,
     COMPONENTS,
     SIGMA_METHODS,
     Assumptions,
     compute_trend,
-    explain,
 )
+from bmm.ui import market_now
 from bmm.universe import Stock, as_of, stocks
 
 DISCLAIMER = (
@@ -70,9 +69,9 @@ def describe(h: PriceHistory) -> str:
             f" · last adjusted close {h.adj_close.iloc[-1]:,.2f}")
 
 
-def show_data(stock: Stock) -> tuple[PriceHistory | None, PriceHistory | None]:
+def show_data(stock: Stock, status: MarketStatus) -> tuple[PriceHistory | None,
+                                                          PriceHistory | None]:
     """Status line, price and index sources, and the CSV upload. Returns (stock, index)."""
-    status = market_status()
     icon = {"open": "🟢", "closed": "🔴", "unknown": "⚪"}[status.state]
     st.caption(f"{icon} NSE: {status.label}. {status.detail}")
 
@@ -148,63 +147,6 @@ def sidebar_assumptions() -> tuple[Assumptions, float | None]:
     return DEFAULTS.with_(sigma_method=method, weights=weights, **values), manual
 
 
-def show_trend(prices: PriceHistory, index: PriceHistory | None, sentiment: Sentiment,
-               assumptions: Assumptions, manual_news: float | None) -> None:
-    news_score = sentiment.score if manual_news is None else manual_news
-    try:
-        trend = compute_trend(prices.adj_close, index.adj_close if index else None,
-                              news_score, assumptions)
-    except ValueError as exc:
-        st.error(f"Trend not available: {exc}")
-        return
-    st.markdown("#### Trend")
-    c = st.columns(4)
-    c[0].metric("Trend", trend.label)
-    c[1].metric("Final drift μ (annual)", f"{trend.mu:+.1%}")
-    c[2].metric("Volatility σ (annual)", f"{trend.sigma:.1%}",
-                help=SIGMA_METHODS[trend.sigma_method])
-    c[3].metric("Beta vs Nifty 50", f"{trend.beta:.2f}", help=trend.beta_note)
-
-    with st.expander("Why this trend?", expanded=True):
-        for line in explain(trend):
-            st.markdown(f"- {line}")
-        rows = [{"Component": comp.label,
-                 "Annual μ": "n/a" if comp.mu is None else f"{comp.mu:+.2%}",
-                 "Weight": f"{comp.share:.0%}", "Contribution": f"{comp.contribution:+.2%}",
-                 "How": comp.how} for comp in trend.components]
-        rows += [{"Component": "Price-trend μ", "Annual μ": "", "Weight": "",
-                  "Contribution": f"{trend.price_mu:+.2%}", "How": "weighted sum"},
-                 {"Component": "News adjustment", "Annual μ": f"{trend.news_score:+.2f}",
-                  "Weight": f"cap {assumptions.news_cap:.0%}",
-                  "Contribution": f"{trend.news_adjustment:+.2%}",
-                  "How": "manual score" if manual_news is not None
-                  else "no recent headlines" if sentiment.count == 0
-                  else f"{sentiment.count} headlines, {sentiment.label.lower()}"},
-                 {"Component": "FINAL μ", "Annual μ": "", "Weight": "",
-                  "Contribution": f"{trend.mu:+.2%}",
-                  "How": f"clamped to ±{assumptions.mu_limit:.0%}" if trend.clamped else ""}]
-        st.dataframe(pd.DataFrame(rows), hide_index=True, use_container_width=True)
-        vols = " · ".join(f"{SIGMA_METHODS[k]} {v:.1%}" for k, v in trend.sigmas.items()
-                          if v is not None)
-        st.caption(f"Volatility estimates: {vols}")
-        for note in trend.notes:
-            st.caption(note)
-
-
-def show_headlines(news: News, sentiment: Sentiment) -> None:
-    st.markdown(f"#### Recent headlines ({sentiment.count}) · sentiment {sentiment.score:+.2f} "
-                f"({sentiment.label.lower()})")
-    if 0 < sentiment.count < 5:
-        st.caption(f"Only {sentiment.count} headline(s), so the average {sentiment.raw_mean:+.2f} "
-                   f"is scaled by {sentiment.count}/5.")
-    for item in sentiment.scored:
-        h = item.headline
-        st.markdown(f"- `{item.score:+.2f}` [{h.title}]({h.url}) · {h.publisher} · "
-                    f"{h.published.tz_convert('Asia/Kolkata'):%d %b, %H:%M} IST")
-    for note in news.notes:
-        st.caption(note)
-
-
 st.title("BMM Stock Simulator")
 st.caption(f"Nifty 100 universe as of {as_of()} · stock price movement only")
 
@@ -230,7 +172,7 @@ elif result.status is Status.NOT_FOUND:
     cols = st.columns(len(result.suggestions))
     for col, s in zip(cols, result.suggestions, strict=True):
         col.button(f"{s.name} ({s.symbol})", key=f"suggest::{s.symbol}", on_click=pick,
-                   args=(s.symbol,), use_container_width=True)
+                   args=(s.symbol,), width="stretch")
 
 stock = BY_SYMBOL.get(st.session_state.get("symbol"))
 st.divider()
@@ -244,17 +186,27 @@ else:
     st.caption(" · ".join(details))
 
     assumptions, manual_news = sidebar_assumptions()
-    prices, index = show_data(stock)
+    status = market_status()
+    prices, index = show_data(stock, status)
     news = get_headlines(stock.yahoo_symbol, stock.name)
     sentiment = score_headlines(news.headlines)
+    trend, trend_error = None, None
+    if prices is not None:
+        try:
+            trend = compute_trend(prices.adj_close, index.adj_close if index else None,
+                                  sentiment.score if manual_news is None else manual_news,
+                                  assumptions)
+        except ValueError as exc:
+            trend_error = str(exc)
 
     market, paths, third = st.tabs(["Market now", "BMM path trace", "Dashboard 3"])
     with market:
-        if prices is not None:
-            show_trend(prices, index, sentiment, assumptions, manual_news)
-            st.line_chart(prices.adj_close, height=260, y_label="Adjusted close")
-        st.info("Day change, 52-week range and the full market dashboard arrive in Phase 4.")
-        show_headlines(news, sentiment)
+        if prices is None:
+            st.info("Load prices (live, snapshot or your CSV) to see the dashboard.")
+            market_now.headlines(news, sentiment)
+        else:
+            market_now.render(prices, index, trend, trend_error, status, news, sentiment,
+                              manual_news)
     with paths:
         st.info("1,000 simulated price paths (naive bootstrap vs scientific GBM), the 5–95% cone, "
                 "terminal distribution and backtest arrive in Phase 5.")
